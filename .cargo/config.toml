@@ -1,0 +1,26 @@
+[unstable]
+# Rebuild std using atomics
+build-std = ['std', 'panic_abort']
+
+[alias]
+# My machine's target triple is x86_64-unknown-linux-gnu
+tt = "test --target x86_64-unknown-linux-gnu"
+
+[build]
+target = "wasm32-unknown-unknown"
+
+
+[target.wasm32-unknown-unknown]
+# The +atomics feature is what signals to rustc to use shared memory for threading, however shared memory also relies on bulk-memory and mutable-globals
+rustflags = ["-Ctarget-feature=+atomics,+bulk-memory,+mutable-globals"]
+
+[profile.dev]
+# Optimizes for binary size in both dev and release
+opt-level = "s"
+# Link-Time-Optimization helps to eliminate unused code
+# Fat lto is full program instead of codegen-unit
+lto = "fat"
+
+[profile.release]
+opt-level = "s"
+lto = "fat"
