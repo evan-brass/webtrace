@@ -1,30 +1,31 @@
-use std::sync::{Condvar, Mutex};
-
-mod ffi;
-
+#![allow(improper_ctypes_definitions, improper_ctypes)]
 mod bitmap;
-mod ray;
-mod render_job;
-mod scene;
-use self::{render_job::RenderJob, scene::Scene};
-
-static S: Scene = Scene {};
-
-static CURRENT_JOB: Mutex<Option<RenderJob>> = Mutex::new(None);
-static JOB_CHANGE: Condvar = Condvar::new();
+mod ffi;
+use self::{
+	bitmap::{Bitmap, Color},
+	ffi::{get_seed, log},
+};
 
 #[no_mangle]
-pub extern "C" fn work() {
-	ffi::log("Starting to work...");
-	while let Ok(lock) = CURRENT_JOB.lock() {
-		if let Some(ref job) = *lock {
-			job.work()
-		} else {
-			JOB_CHANGE.wait(lock);
-		}
+pub extern "C" fn render() {
+	log("Starting to render...");
+
+	let mut output: Bitmap = Bitmap::new(256, 256);
+
+	for (i, color) in output.data.iter_mut().enumerate() {
+		let x = i % output.width;
+		let y = i / output.width;
+
+		*color = Color {
+			r: x as u8,
+			g: y as u8,
+			b: 255 / 4,
+			a: 255,
+		};
 	}
-	ffi::log("Done working.");
+	output.view();
+	log("Done rendering.");
 }
 
 #[no_mangle]
-pub extern "C" fn start_render() {}
+pub extern "C" fn work() {}

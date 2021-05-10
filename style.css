@@ -1,0 +1,18 @@
+html, body {
+	margin: 0;
+}
+html {
+	background-color: #eee;
+}
+body {
+	max-width: 85ch;
+	background-color: white;
+	border: 1px solid #aaa;
+	margin: 1em auto;
+	padding: 1em;
+}
+canvas {
+	display: block;
+	margin: 0 auto;
+	max-width: 100%;
+}

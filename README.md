@@ -8,6 +8,8 @@ This is my second time going through these tutorials.  My [https://github.com/ev
 
 ## 0. Initial Setup
 * Setup Rust for threaded wasm
+* Draw something
+* Draw it using multiple threads
 
 ---
 ## Commands

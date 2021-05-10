@@ -1,4 +1,5 @@
 // As best as I can understand, these imports are an accident.  My guess is that Rustc thought llvm would output instructions to replace these calls.
+// I think llvm just renamed the primatives to llvm.
 // The instructions aren't standardized yet in WebAssembly and they've changed names / codes in the drafts which I believe has tripped up llvm/rustc.
 // In any case, until Nightly includes a fix, I'm hoping this will work.
 

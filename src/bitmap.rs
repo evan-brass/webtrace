@@ -1,3 +1,7 @@
+extern "C" {
+	fn view_bitmap(ptr: *const Color, width: usize, len: usize);
+}
+
 // Since the default integral value is 0, the default color will be transparent black - as intended.
 #[repr(packed)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -29,5 +33,15 @@ impl Bitmap {
 	}
 	pub fn height(&self) -> usize {
 		self.data.len() / self.width
+	}
+	pub fn view(&self) {
+		let ptr = self.data.as_ptr();
+		unsafe {
+			view_bitmap(
+				ptr,
+				self.width,
+				self.data.len() * std::mem::size_of::<Color>(),
+			);
+		}
 	}
 }

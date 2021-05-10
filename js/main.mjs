@@ -1,5 +1,6 @@
 import llvm_imports from './llvm-imports.mjs';
 import ffi_imports from './ffi-imports.mjs';
+import progress_imports from './progress-imports.mjs';
 
 if (!window.crossOriginIsolate) {
 	document.body.insertAdjacentHTML('beforeend', `<p style="color: red;">Not CrossOriginIsolated - expect failures</p>`);
@@ -16,13 +17,14 @@ if (!window.crossOriginIsolate) {
 		env: {
 			memory,
 			...llvm_imports(memory),
-			...ffi_imports(memory)
+			...ffi_imports(memory),
+			...progress_imports(memory)
 		}
 	};
 
 	const instance = await WebAssembly.instantiate(module, imports);
 
-	const { } = instance.exports;
+	const { render } = instance.exports;
 	// TODO: Hookup buttons / events and things and stuff... ya know.
 
 	// Instantiate our Workers:
@@ -33,4 +35,6 @@ if (!window.crossOriginIsolate) {
 		worker.onerror = e => console.error(e.message);
 		worker.postMessage({ memory, module });
 	}
+
+	render();
 })()
