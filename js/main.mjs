@@ -24,8 +24,6 @@ if (!window.crossOriginIsolate) {
 
 	const instance = await WebAssembly.instantiate(module, imports);
 
-	const { render } = instance.exports;
-	// TODO: Hookup buttons / events and things and stuff... ya know.
 
 	// Instantiate our Workers:
 	for (let i = 0; i < 4; ++i) {
@@ -36,5 +34,24 @@ if (!window.crossOriginIsolate) {
 		worker.postMessage({ memory, module });
 	}
 
-	render();
+	const { start_render, status } = instance.exports;
+	const render_btn = document.getElementById('start-render');
+	render_btn.innerText = "Render";
+	render_btn.disabled = false;
+	render_btn.onclick = () => {
+		if (!start_render()) {
+			alert('Failed to start render');
+			return;
+		}
+		render_btn.disabled = true;
+
+		// Start the progress loop
+		(function update() {
+			if (status()) {
+				requestAnimationFrame(update);
+			} else {
+				render_btn.disabled = false;
+			}
+		})();
+	};
 })()

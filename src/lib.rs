@@ -1,31 +1,31 @@
 #![allow(improper_ctypes_definitions, improper_ctypes)]
 mod bitmap;
 mod ffi;
+mod render_job;
+use lazy_static::lazy_static;
+
 use self::{
 	bitmap::{Bitmap, Color},
 	ffi::{get_seed, log},
+	render_job::RenderJob,
 };
 
-#[no_mangle]
-pub extern "C" fn render() {
-	log("Starting to render...");
-
-	let mut output: Bitmap = Bitmap::new(256, 256);
-
-	for (i, color) in output.data.iter_mut().enumerate() {
-		let x = i % output.width;
-		let y = i / output.width;
-
-		*color = Color {
-			r: x as u8,
-			g: y as u8,
-			b: 255 / 4,
-			a: 255,
-		};
-	}
-	output.view();
-	log("Done rendering.");
+lazy_static! {
+	static ref RENDER_JOB: RenderJob = RenderJob::new();
 }
 
 #[no_mangle]
-pub extern "C" fn work() {}
+pub extern "C" fn start_render() -> bool {
+	RENDER_JOB.start_render(1)
+}
+
+#[no_mangle]
+pub extern "C" fn status() -> bool {
+	RENDER_JOB.status()
+}
+
+#[no_mangle]
+pub extern "C" fn work() {
+	log("Worker Started");
+	RENDER_JOB.work();
+}
